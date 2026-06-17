@@ -203,6 +203,9 @@ export default function UploadDocs() {
             );
             if (!res.ok) throw new Error("Server error");
             const result: DocsResponse = await res.json();
+              console.log("=== RAW API RESPONSE ===");
+        console.log(JSON.stringify(result, null, 2));
+        console.log("========================");
            
     setDocs(
             (result.controls ?? []).filter(
@@ -358,7 +361,11 @@ if (Platform.OS === "web") {
         formData.append("latitude", currentDoc.gpslat ?? "0");
         formData.append("longitude", currentDoc.gpslong ?? "0");
         formData.append("ipaddress", ipAddress);
-
+//  console.log("=== FormData being sent ===");
+//         for (let [key, value] of formData.entries()) {
+//             console.log(key, "→", value);
+//         }
+        console.log("===========================");
         const res = await fetch(
             "https://localhost:7065/api/UIHis/Hos_Scheme_Scandocs_others_Upload_uploadAllDocumentsll",
             {
@@ -713,7 +720,9 @@ if (!success) throw new Error(message || `Server error: ${res.status}`);
                                                     pressed && { opacity: 0.85 },
                                                     !currentDoc.canUploadFile && styles.actionBtnDisabled,
                                                 ]}
-                                                disabled={!currentDoc.canUploadFile}
+                                                // disabled={!currentDoc.canUploadFile}
+                                                //just bypassing for test purpose remove when comp completed and uncomment that above
+                                                disabled={false}
                                                 onPress={handleSelectFile}
                                             >
                                                 <Text style={styles.actionBtnText}>📁 Select</Text>
@@ -744,9 +753,15 @@ if (!success) throw new Error(message || `Server error: ${res.status}`);
                                                     styles.actionBtn,
                                                     styles.uploadBtn,
                                                     pressed && { opacity: 0.85 },
-                                                    (!selectedFile || uploading || !currentDoc.canUploadFile) && styles.actionBtnDisabled,
-                                                ]}
-                                                disabled={!selectedFile || uploading || !currentDoc.canUploadFile}
+                                                    // (!selectedFile || uploading || !currentDoc.canUploadFile) && styles.actionBtnDisabled,
+                                                    //just bypassing for test remove when comp completed
+                                                  (!selectedFile || uploading) && styles.actionBtnDisabled,
+                                                   ]}
+                                                
+                                                // disabled={!selectedFile || uploading || !currentDoc.canUploadFile}
+                                                //just bypassing for test purpose remove when comp completed and uncomment that above
+                                                disabled={!selectedFile || uploading}
+                                                
                                                 onPress={handleUpload}
                                             >
                                                 {uploading ? (
