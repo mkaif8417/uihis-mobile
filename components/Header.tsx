@@ -11,7 +11,7 @@ export default function Header({ onMenuPress }: HeaderProps) {
       <Image
         source={require("../assets/images/header-banner.png")}
         style={styles.image}
-        resizeMode="cover"
+        resizeMode="contain"
       />
 
       {/* Menu Bar (below image) */}
@@ -29,7 +29,7 @@ export default function Header({ onMenuPress }: HeaderProps) {
 const styles = StyleSheet.create({
   image: {
     width: "100%",
-    height: 120,
+     height: 150,
   },
   menuBar: {
     height: 44,
