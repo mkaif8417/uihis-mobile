@@ -137,7 +137,7 @@ const payload: LoginPayload = {
   username:   args.username.trim(),
   password:   hashPassword(args.password.trim(), rawSalt),
   hiddensalt: CryptoJS.SHA256(rawSalt).toString(CryptoJS.enc.Hex), // ← hashed
-  kon:        args.kon ?? '34',
+  kon:        '34',//args.kon ?? 
   ipadd:      '0.0.0.0',
   attempt:    args.attempt ?? 1,
   systemId:   args.systemId ?? 'MOBILE_APP',
@@ -146,8 +146,8 @@ const payload: LoginPayload = {
   // ── DEBUG START ──────────────────────────────────────────────────
   const key = process.env.EXPO_PUBLIC_SECRET_KEY ?? '';
   const iv  = process.env.EXPO_PUBLIC_SECRET_IV  ?? '';
-  console.log('[DEBUG] KEY length:', key.length, '| IV length:', iv.length);
-  console.log('[DEBUG] KEY:', key);   // remove after confirming
+  // console.log('[DEBUG] KEY length:', key.length, '| IV length:', iv.length);
+  // console.log('[DEBUG] KEY:', key);   // remove after confirming
   console.log('[DEBUG] payload (plain):', JSON.stringify(payload, null, 2));
 
   // Test round-trip

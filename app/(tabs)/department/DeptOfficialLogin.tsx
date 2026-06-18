@@ -6,6 +6,7 @@
  */
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { Asset } from 'expo-asset';
+import { useRouter } from 'expo-router';
 import * as Sharing from 'expo-sharing';
 import React, {
   useCallback,
@@ -30,7 +31,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { loginDepartmentOfficial } from '../../../api/api';
+import { loginDepartmentOfficial } from '../../../api/_api';
 import Captcha from '../../../components/Captcha';
 
 // ─── Navigation / Redux (restore when wiring up) ──────────────────────────────
@@ -110,6 +111,7 @@ function FadeInView({ children, delay = 0, style }: FadeInProps) {
 
 // ─── Main Screen ──────────────────────────────────────────────────────────────
 export default function DepartmentOfficialLoginScreen({ navigation }: Props) {
+  const router = useRouter();
   // const dispatch = useDispatch<AppDispatch>();
 
   const [username,      setUsername]      = useState('');
@@ -143,73 +145,70 @@ export default function DepartmentOfficialLoginScreen({ navigation }: Props) {
   };
 
   // ── Login ─────────────────────────────────────────────────────────────────
-  const handleLogin = async () => {
-    // ── Validation ──────────────────────────────────────────────────────────
-    if (!username.trim()) {
-      Alert.alert('Missing Field', 'Please enter your Email Address / Username.');
-      return;
-    }
-    if (!password.trim()) {
-      Alert.alert('Missing Field', 'Please enter your Password.');
-      return;
-    }
-    if (captchaAnswer.toUpperCase().trim() !== captchaCode) {
-      Alert.alert('Wrong CAPTCHA', 'Please enter the CAPTCHA correctly.');
-      handleRefreshCaptcha();
-      return;
-    }
+const handleLogin = async () => {
+  // ── Validation ──────────────────────────────────────────────────────────
+  if (!username.trim()) {
+    Alert.alert('Missing Field', 'Please enter your Email Address / Username.');
+    return;
+  }
+  if (!password.trim()) {
+    Alert.alert('Missing Field', 'Please enter your Password.');
+    return;
+  }
+  if (captchaAnswer.toUpperCase().trim() !== captchaCode) {
+    Alert.alert('Wrong CAPTCHA', 'Please enter the CAPTCHA correctly.');
+    handleRefreshCaptcha();
+    return;
+  }
 
-    setIsLoading(true);  
+  setIsLoading(true);
 
-    try {
-      // ── All payload building, encryption, and HTTP is inside api.ts ──────
-      const data = await loginDepartmentOfficial({
-        username,
-        password,
-        attempt: loginAttempt,
+  try {
+    const data = await loginDepartmentOfficial({
+      username,
+      password,
+      attempt: loginAttempt,
+    });
+
+    const isSuccess =
+      data?.success === true  ||
+      data?.Success === true  ||
+      data?.status  === 'success' ||
+      data?.Status  === 'success';
+
+    if (isSuccess) {
+      // dispatch(setOfficialSession({ token: data.token, user: data }));
+      router.replace({
+        pathname: '/department/DeptHome',
+        params: { username: data?.userName ?? data?.UserName ?? username },
       });
-
-      const isSuccess =
-        data?.success === true  ||
-        data?.Success === true  ||
-        data?.status  === 'success' ||
-        data?.Status  === 'success';
-
-      if (isSuccess) {
-        // dispatch(setOfficialSession({ token: data.token, user: data }));
-        Alert.alert(
-          'Login Successful',
-          `Welcome, ${data?.userName ?? data?.UserName ?? username}!`,
-        );
-        // navigation?.navigate('Dashboard');
-      } else {
-        const msg =
-          data?.message      ??
-          data?.Message      ??
-          data?.errorMessage ??
-          data?.ErrorMessage ??
-          'Invalid credentials. Please try again.';
-        Alert.alert('Login Failed', String(msg));
-        setLoginAttempt(n => n + 1);
-        handleRefreshCaptcha();
-      }
-
-    } catch (error: any) {
-      console.log('Login error =>', error);
+    } else {
+      const msg =
+        data?.message      ??
+        data?.Message      ??
+        data?.errorMessage ??
+        data?.ErrorMessage ??
+        'Invalid credentials. Please try again.';
+      Alert.alert('Login Failed', String(msg));
       setLoginAttempt(n => n + 1);
-
-      if (error?.message?.includes('Network request failed')) {
-        Alert.alert('Network Error', 'Unable to reach the server. Check your connection and try again.');
-      } else {
-        Alert.alert('Login Failed', error?.message ?? 'Something went wrong. Please try again.');
-      }
-
       handleRefreshCaptcha();
-    } finally {
-      setIsLoading(false);
     }
-  };
 
+  } catch (error: any) {
+    console.log('Login error =>', error);
+    setLoginAttempt(n => n + 1);
+
+    if (error?.message?.includes('Network request failed')) {
+      Alert.alert('Network Error', 'Unable to reach the server. Check your connection and try again.');
+    } else {
+      Alert.alert('Login Failed', error?.message ?? 'Something went wrong. Please try again.');
+    }
+
+    handleRefreshCaptcha();
+  } finally {
+    setIsLoading(false);
+  }
+};
   // ── UI ────────────────────────────────────────────────────────────────────
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -400,7 +399,7 @@ const styles = StyleSheet.create({
   refreshBtn:   { width: 44, height: 44, borderRadius: 22, backgroundColor: '#E8F4FD', borderWidth: 1.5, borderColor: '#7EB8D8', alignItems: 'center', justifyContent: 'center' },
   captchaInput: { width: 90, backgroundColor: '#F0F6FF', borderRadius: 12, borderWidth: 1.5, borderColor: '#B8D4E8', textAlign: 'center', fontSize: 16, fontWeight: '800', color: BLUE_TEXT, paddingVertical: 13 },
 
-  primaryBtn:     { backgroundColor: BLUE_DARK, borderRadius: 14, paddingVertical: 15, alignItems: 'center', elevation: 6, shadowColor: BLUE_DARK, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.3, shadowRadius: 12, marginBottom: 16 },
+  primaryBtn:     { backgroundColor: BLUE_DARK, borderRadius: 14, paddingVertical: 15, alignItems: 'center', elevation: 6, boxShadow: BLUE_DARK, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.3, shadowRadius: 12, marginBottom: 16 },
   btnDisabled:    { backgroundColor: '#7EB8D8', shadowOpacity: 0, elevation: 0 },
   primaryBtnText: { color: '#fff', fontSize: 16, fontWeight: '800', letterSpacing: 0.5 },
   btnInner:       { flexDirection: 'row', alignItems: 'center' },

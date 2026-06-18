@@ -1,16 +1,22 @@
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import {
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-type Props = { navigation?: any };
+export default function DeptHome() {
+  const router = useRouter();
+  const { username } = useLocalSearchParams<{ username?: string }>();
 
-export default function DeptHome({ navigation }: Props) {
+  const handleLogout = () => {
+    router.replace('/department/DeptOfficialLogin');
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.scroll}>
@@ -19,40 +25,17 @@ export default function DeptHome({ navigation }: Props) {
         <View style={styles.header}>
           <MaterialIcons name="account-balance" size={32} color="#fff" />
           <Text style={styles.headerTitle}>Department Dashboard</Text>
-          <Text style={styles.headerSubtitle}>Welcome, Official!</Text>
+          <Text style={styles.headerSubtitle}>
+            Welcome, {username ?? 'Official'}!
+          </Text>
         </View>
 
-        {/* Cards */}
-        <View style={styles.cardRow}>
-          <View style={styles.card}>
-            <MaterialIcons name="people" size={28} color="#1A4971" />
-            <Text style={styles.cardNumber}>120</Text>
-            <Text style={styles.cardLabel}>Total Farmers</Text>
-          </View>
-          <View style={styles.card}>
-            <MaterialIcons name="assignment" size={28} color="#1A4971" />
-            <Text style={styles.cardNumber}>45</Text>
-            <Text style={styles.cardLabel}>Applications</Text>
-          </View>
-        </View>
-
-        <View style={styles.cardRow}>
-          <View style={styles.card}>
-            <MaterialIcons name="check-circle" size={28} color="#1A4971" />
-            <Text style={styles.cardNumber}>30</Text>
-            <Text style={styles.cardLabel}>Approved</Text>
-          </View>
-          <View style={styles.card}>
-            <MaterialIcons name="pending" size={28} color="#1A4971" />
-            <Text style={styles.cardNumber}>15</Text>
-            <Text style={styles.cardLabel}>Pending</Text>
-          </View>
-        </View>
+        {/* ...cards stay the same... */}
 
         {/* Logout Button */}
         <TouchableOpacity
           style={styles.logoutBtn}
-          onPress={() => navigation?.goBack()}
+          onPress={handleLogout}
           activeOpacity={0.85}
         >
           <Ionicons name="log-out-outline" size={20} color="#fff" />

@@ -3,13 +3,13 @@ import ScreenLayout from "@/components/ScreenLayout";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-    Image,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  Image,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 import useFarmer from "../../../components/context/FarmerContext";
 
@@ -48,6 +48,7 @@ const FarmerLogin: React.FC = () => {
     try {
       const res = await fetch(
         `https://localhost:7065/api/UIHis/getotp?userid=${mobile}`,
+        // `https://hortnet.hortharyana.gov.in/UIHortHar-API/api/UIHis/getotp?userid=${mobile}`,
         { method: "GET" }
       );
 
@@ -86,6 +87,7 @@ const FarmerLogin: React.FC = () => {
     try {
       const res = await fetch(
         `https://localhost:7065/api/UIHis/getbeneficiarydetailsmob?kon=34&mobileno=${mobile}&year=25`,
+        // `https://hortnet.hortharyana.gov.in/UIHortHar-API/api/UIHis/getbeneficiarydetailsmob?kon=08&mobileno=${mobile}&year=25`,
         { method: "GET" }
       );
 

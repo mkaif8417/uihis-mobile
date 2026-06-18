@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
 
   label: { fontSize: 14, fontWeight: '700', color: '#1B4332', marginBottom: 8, letterSpacing: 0.5 },
 
-  dropdownTrigger: { backgroundColor: '#fff', borderRadius: 14, borderWidth: 1.5, borderColor: '#C8DDD2', paddingHorizontal: 14, paddingVertical: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 6 },
+  dropdownTrigger: { backgroundColor: '#fff', borderRadius: 14, borderWidth: 1.5, borderColor: '#C8DDD2', paddingHorizontal: 14, paddingVertical: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', elevation: 2, boxShadow: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 6 },
 
   selectedRow: { flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 },
 
@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
 
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 24 },
 
-  dropdownList: { backgroundColor: '#fff', borderRadius: 20, width: '100%', paddingVertical: 8, elevation: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.15, shadowRadius: 16 },
+  dropdownList: { backgroundColor: '#fff', borderRadius: 20, width: '100%', paddingVertical: 8, elevation: 10, boxShadow: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.15, shadowRadius: 16 },
 
   dropdownHeader: { fontSize: 16, fontWeight: '800', color: '#1B4332', textAlign: 'center', paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#E0EDE5', marginBottom: 4 },
 
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
 
   bottomSection: { paddingHorizontal: 24, paddingBottom: 32, paddingTop: 16 },
 
-  continueBtn: { backgroundColor: '#1B4332', borderRadius: 16, paddingVertical: 16, alignItems: 'center', elevation: 6, shadowColor: '#1B4332', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.3, shadowRadius: 12 },
+  continueBtn: { backgroundColor: '#1B4332', borderRadius: 16, paddingVertical: 16, alignItems: 'center', elevation: 6, boxShadow: '#1B4332', shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.3, shadowRadius: 12 },
 
   continueBtnDisabled: { backgroundColor: '#B7D5C4', shadowOpacity: 0, elevation: 0 },
 
