@@ -134,19 +134,19 @@ const PersonalInfo = forwardRef(function PersonalInfo({
 
         Promise.all([
             safeFetch(
-                "https://localhost:7065/api/UIHis/getApplicantTypes?kon=34",
+                "${BASE_URL}/api/UIHis/getApplicantTypes?kon=34",
                 d => [d.type_code, d.type_name]
             ),
             safeFetch(
-                "https://localhost:7065/api/UIHis/GetCategories?kon=34",
+                "${BASE_URL}/api/UIHis/GetCategories?kon=34",
                 d => [d.category_code, d.category_name]
             ),
             safeFetch(
-                "https://localhost:7065/api/UIHis/GetCaste?kon=34",
+                "${BASE_URL}/api/UIHis/GetCaste?kon=34",
                 d => [d.caste_code, d.caste_name]
             ),
             safeFetch(
-                "https://localhost:7065/api/UIHis/GetEduQualification?kon=34",
+                "${BASE_URL}/api/UIHis/GetEduQualification?kon=34",
                 d => [d.qualification_code, d.qualification_name]
             ),
         ]).then(([t, c, s, q]) => {

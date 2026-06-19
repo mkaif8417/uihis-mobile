@@ -1,6 +1,7 @@
 import Captcha from "@/components/Captcha";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
+import { BASE_URL } from "@/ipconfig";
 import { generateAcknowledgementPDF } from "@/utils/ackPdf";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
@@ -13,7 +14,6 @@ import {
     View,
 } from "react-native";
 import useSchemeForm from "../../../../components/context/SchemeFormContext";
-
 const generateCaptcha = (length = 5) => {
     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
     return Array.from({ length }, () =>
@@ -88,10 +88,10 @@ export default function ApplicationAcknowledgement() {
             try {
                 const [typeData, catData] = await Promise.all([
                     safeJsonFetch(
-                        "https://localhost:7065/api/UIHis/getApplicantTypes?kon=34"
+                        "${BASE_URL}/api/UIHis/getApplicantTypes?kon=34"
                     ),
                     safeJsonFetch(
-                        "https://localhost:7065/api/UIHis/GetCategories?kon=34"
+                        "${BASE_URL}/api/UIHis/GetCategories?kon=34"
                     ),
                 ]);
 
@@ -133,7 +133,7 @@ export default function ApplicationAcknowledgement() {
             setApiError("");
 
             const res = await fetch(
-                `https://localhost:7065/api/UIHis/getbeneficiarydetails_sch?kon=34&appl_reg_no=${form.registrationId}&year=25`
+                `${BASE_URL}/api/UIHis/getbeneficiarydetails_sch?kon=34&appl_reg_no=${form.registrationId}&year=25`
             );
 
             const data = await res.json();

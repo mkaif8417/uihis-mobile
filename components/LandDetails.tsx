@@ -74,7 +74,7 @@ const LandDetails = forwardRef(function LandDetails({
   /* Fetch districts */
   useEffect(() => {
     fetch(
-      "https://localhost:7065/api/UIHis/getDistricts?kon=34&state_code=08"
+      "${BASE_URL}/api/UIHis/getDistricts?kon=34&state_code=08"
     )
       .then(res => res.json())
       .then(data =>
@@ -89,7 +89,7 @@ const LandDetails = forwardRef(function LandDetails({
     if (!local.district) return;
     setBlocks([]);
     fetch(
-      `https://localhost:7065/api/UIHis/getMandals?kon=34&state_code=08&district_code=${local.district}`
+      `${BASE_URL}/api/UIHis/getMandals?kon=34&state_code=08&district_code=${local.district}`
     )
       .then(res => res.json())
       .then(data =>
@@ -102,7 +102,7 @@ const LandDetails = forwardRef(function LandDetails({
     if (!local.block) return;
     setPanchayats([]);
     fetch(
-      `https://localhost:7065/api/UIHis/getPanchayats?kon=34&state_code=08&district_code=${local.district}&mandal_code=${local.block}`
+      `${BASE_URL}/api/UIHis/getPanchayats?kon=34&state_code=08&district_code=${local.district}&mandal_code=${local.block}`
     )
       .then(res => res.json())
       .then(data =>
@@ -117,7 +117,7 @@ const LandDetails = forwardRef(function LandDetails({
     if (!local.panchayat) return;
     setVillages([]);
     fetch(
-      `https://localhost:7065/api/UIHis/getVillages?kon=34&state_code=08&district_code=${local.district}&mandal_code=${local.block}&panchayat_code=${local.panchayat}`
+      `${BASE_URL}/api/UIHis/getVillages?kon=34&state_code=08&district_code=${local.district}&mandal_code=${local.block}&panchayat_code=${local.panchayat}`
     )
       .then(res => res.json())
       .then(data =>

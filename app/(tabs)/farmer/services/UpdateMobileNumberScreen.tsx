@@ -2,12 +2,12 @@ import Captcha from "@/components/Captcha";
 import useFarmer from "@/components/context/FarmerContext";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
+import { BASE_URL } from "@/ipconfig";
 import axios from "axios";
 import { navigate } from "expo-router/build/global-state/routing";
 import { useEffect, useState } from "react";
 import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
 
 const KON = "34";
 const YEAR = "25";
@@ -66,7 +66,7 @@ export default function UpdateMobileNumberScreen() {
             setLoading(true);
 
             const res = await axios.get(
-                `https://localhost:7065/api/UIHis/getbeneficiarydetailsmob?kon=${KON}&mobileno=${existingMobile}&year=${YEAR}`
+                `${BASE_URL}/api/UIHis/getbeneficiarydetailsmob?kon=${KON}&mobileno=${existingMobile}&year=${YEAR}`
             );
 
             const data = res.data;
@@ -102,7 +102,7 @@ export default function UpdateMobileNumberScreen() {
             console.log(applRegNo)
 
             const res = await axios.post(
-                `https://localhost:7065/api/UIHis/UpdateMobileNumber?kon=34&applRegNo=${applRegNo}&mobileNo=${newMobile}`,
+                `${BASE_URL}/api/UIHis/UpdateMobileNumber?kon=34&applRegNo=${applRegNo}&mobileNo=${newMobile}`,
                 null, // no body
                 {
                     responseType: "text", // 🔑 important

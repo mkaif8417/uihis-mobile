@@ -73,46 +73,89 @@ function hashPassword(plaintext: string, rawSalt: string): string {
  * Generic encrypted POST helper.
  * Encrypts `body`, POSTs to `endpoint`, decrypts and returns the response.
  */
+// async function encryptedPost<TBody, TResponse>(
+//   endpoint: string,
+//   body: TBody,
+// ): Promise<TResponse> {
+//   console.log('Sending payload =>', JSON.stringify(body)); 
+//   const encryptedData = encryptData(body);
+
+//   const response = await fetch(`${BASE_URL}${endpoint}`, {
+//     method: 'POST',
+//     headers: {
+//       'Content-Type': 'application/json',
+//       Accept:         'application/json',
+//     },
+//     body: JSON.stringify({ encryptedData }),
+//   });
+
+//   if (!response.ok) {
+//     // Try to read a JSON error body; fall back to status text
+//     let errMsg = `HTTP ${response.status}`;
+//     try {
+//       const errJson = await response.json();
+//       errMsg = errJson?.message ?? errJson?.Message ?? errMsg;
+//     } catch {
+//       errMsg = (await response.text()) || errMsg;
+//     }
+//     throw new Error(errMsg);
+//   }
+
+//   const json = await response.json();
+
+//   // Some endpoints may return plain JSON on success instead of encrypted payload
+//   if (!json?.encryptedData) {
+//     return json as TResponse;
+//   }
+
+//   return decryptData<TResponse>(json.encryptedData);
+// }
+
+// ─── Auth API ─────────────────────────────────────────────────────────────────
 async function encryptedPost<TBody, TResponse>(
   endpoint: string,
   body: TBody,
 ): Promise<TResponse> {
-  console.log('Sending payload =>', JSON.stringify(body)); 
+  console.log('Sending payload =>', JSON.stringify(body));
+
   const encryptedData = encryptData(body);
 
   const response = await fetch(`${BASE_URL}${endpoint}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Accept:         'application/json',
+      Accept: 'application/json',
     },
     body: JSON.stringify({ encryptedData }),
   });
 
+  // ===== DEBUG =====
   if (!response.ok) {
-    // Try to read a JSON error body; fall back to status text
-    let errMsg = `HTTP ${response.status}`;
-    try {
-      const errJson = await response.json();
-      errMsg = errJson?.message ?? errJson?.Message ?? errMsg;
-    } catch {
-      errMsg = (await response.text()) || errMsg;
-    }
-    throw new Error(errMsg);
+    const text = await response.text();
+
+    console.log('====================================');
+    console.log('STATUS       :', response.status);
+    console.log('STATUS TEXT  :', response.statusText);
+    console.log('RAW RESPONSE :', text);
+    console.log('====================================');
+
+    throw new Error(text || `HTTP ${response.status}`);
   }
 
   const json = await response.json();
 
-  // Some endpoints may return plain JSON on success instead of encrypted payload
+  console.log('SUCCESS RESPONSE:', json);
+
   if (!json?.encryptedData) {
     return json as TResponse;
   }
 
-  return decryptData<TResponse>(json.encryptedData);
+  const decrypted = decryptData<TResponse>(json.encryptedData);
+
+  console.log('DECRYPTED RESPONSE:', decrypted);
+
+  return decrypted;
 }
-
-// ─── Auth API ─────────────────────────────────────────────────────────────────
-
 export interface LoginArgs {
   username:  string;
   password:  string;   // plaintext — will be hashed here
@@ -131,17 +174,31 @@ export interface LoginArgs {
  */
 // TEMP DEBUG — remove before production
 export async function loginDepartmentOfficial(args: LoginArgs): Promise<LoginResponse> {
-  const rawSalt = String(Date.now()).slice(-10);
+//   const rawSalt = String(Date.now()).slice(-10);
+
+// const payload: LoginPayload = {
+//   username:   args.username.trim(),
+//   password:   hashPassword(args.password.trim(), rawSalt),
+//   hiddensalt: CryptoJS.SHA256(rawSalt).toString(CryptoJS.enc.Hex), // ← hashed
+//   kon:        '34',//args.kon ?? 
+//   ipadd:      '0.0.0.0',
+//   attempt:    args.attempt ?? 1,
+//   systemId:   args.systemId ?? 'MOBILE_APP',
+// };
+const rawSalt = String(Date.now()).slice(-10);
 
 const payload: LoginPayload = {
-  username:   args.username.trim(),
-  password:   hashPassword(args.password.trim(), rawSalt),
-  hiddensalt: CryptoJS.SHA256(rawSalt).toString(CryptoJS.enc.Hex), // ← hashed
-  kon:        '34',//args.kon ?? 
-  ipadd:      '0.0.0.0',
-  attempt:    args.attempt ?? 1,
-  systemId:   args.systemId ?? 'MOBILE_APP',
+  username: args.username.trim(),
+  password: hashPassword(args.password.trim(), rawSalt),
+  hiddensalt: rawSalt,
+  kon: '34',
+  ipadd: '0.0.0.0',
+  attempt: args.attempt ?? 1,
+  systemId: 'MOBILE_APP',
 };
+  // ADD HERE
+  console.log("rawSalt =", rawSalt);
+  console.log("hiddensalt =", payload.hiddensalt);
 
   // ── DEBUG START ──────────────────────────────────────────────────
   const key = process.env.EXPO_PUBLIC_SECRET_KEY ?? '';

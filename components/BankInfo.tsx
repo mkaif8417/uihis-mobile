@@ -189,7 +189,7 @@ const BankInfo = forwardRef(function BankInfo({
     setDistricts([]);
     const fetchData = async () => {
       try {
-        await fetch(`https://localhost:7065/api/UIHis/getDistricts?kon=34&state_code=08`)
+        await fetch(`${BASE_URL}/api/UIHis/getDistricts?kon=34&state_code=08`)
           .then(res => res.json())
           .then(data => {
             // Expected: [{ code: "01", name: "District A" }]
@@ -223,7 +223,7 @@ const BankInfo = forwardRef(function BankInfo({
     const fetchIfsc = async () => {
       try {
         const res = await fetch(
-          `https://localhost:7065/api/UIHis/getIFSCcodes?kon=34&bank_code=${form.bankName}&branch_code=${form.branchName}&state_code=08&district_code=${form.district}`,
+          `${BASE_URL}/api/UIHis/getIFSCcodes?kon=34&bank_code=${form.bankName}&branch_code=${form.branchName}&state_code=08&district_code=${form.district}`,
           {
             method: "GET",
           }
@@ -263,7 +263,7 @@ const BankInfo = forwardRef(function BankInfo({
     const fetchBranches = async () => {
       try {
         fetch(
-          `https://localhost:7065/api/UIHis/getBranches?kon=34&district=${form.district}&bank_code=${form.bankName}`
+          `${BASE_URL}/api/UIHis/getBranches?kon=34&district=${form.district}&bank_code=${form.bankName}`
         )
           .then(res => res.json())
           .then(data => {

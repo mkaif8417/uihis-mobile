@@ -80,7 +80,7 @@ const AddressInfo = forwardRef(function AddressInfo({
     React.useEffect(() => {
         console.log("distritcs ldng")
         safeFetch(
-            "https://localhost:7065/api/UIHis/getDistricts?kon=34&state_code=08",
+            "${BASE_URL}/api/UIHis/getDistricts?kon=34&state_code=08",
             setDistricts,
             setLoadingDistrict
         );
@@ -97,7 +97,7 @@ const AddressInfo = forwardRef(function AddressInfo({
         });
 
         safeFetch(
-            `https://localhost:7065/api/UIHis/getMandals?kon=34&state_code=08&district_code=${form.district}`,
+            `${BASE_URL}/api/UIHis/getMandals?kon=34&state_code=08&district_code=${form.district}`,
             setBlocks,
             setLoadingBlock
         );
@@ -113,7 +113,7 @@ const AddressInfo = forwardRef(function AddressInfo({
         });
 
         safeFetch(
-            `https://localhost:7065/api/UIHis/getPanchayats?kon=34&state_code=08&district_code=${form.district}&mandal_code=${form.block}`,
+            `${BASE_URL}/api/UIHis/getPanchayats?kon=34&state_code=08&district_code=${form.district}&mandal_code=${form.block}`,
             setPanchayats,
             setLoadingPanchayat
         );
@@ -129,7 +129,7 @@ const AddressInfo = forwardRef(function AddressInfo({
         });
 
         safeFetch(
-            `https://localhost:7065/api/UIHis/getVillages?kon=34&state_code=08&district_code=${form.district}&mandal_code=${form.block}&panchayat_code=${form.panchayat}`,
+            `${BASE_URL}/api/UIHis/getVillages?kon=34&state_code=08&district_code=${form.district}&mandal_code=${form.block}&panchayat_code=${form.panchayat}`,
             setVillages,
             setLoadingVillage
         );

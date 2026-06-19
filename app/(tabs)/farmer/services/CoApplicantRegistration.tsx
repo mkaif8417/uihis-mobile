@@ -13,7 +13,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const API = axios.create({
-    baseURL: "https://localhost:7065/api/UIHis",
+    baseURL: "${BASE_URL}/api/UIHis",
 });
 
 export default function CoApplicantRegistration() {

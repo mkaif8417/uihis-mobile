@@ -1,6 +1,7 @@
 import useFarmer from '@/components/context/FarmerContext';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
+import { BASE_URL } from '@/ipconfig';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
@@ -13,7 +14,6 @@ import {
     View,
 } from 'react-native';
 import useSchemeForm from '../../../../components/context/SchemeFormContext';
-
 const steps = [
     'Component Details',
     'Land Area & Other Details',
@@ -47,7 +47,7 @@ export default function SchemeFilingHome() {
     const fetchDetails = async () => {
         console.log("regNo: ", regNo)
         try {
-            await fetch(`https://localhost:7065/api/UIHis/getbeneficiarydetails?kon=34&appl_reg_no=${regNo}`)
+            await fetch(`${BASE_URL}/api/UIHis/getbeneficiarydetails?kon=34&appl_reg_no=${regNo}`)
                 .then(res => res.json())
                 .then(data => {
                     // console.log(data)
@@ -68,7 +68,7 @@ export default function SchemeFilingHome() {
             setLoading(true);
 
             const res = await fetch(
-                `https://localhost:7065/api/UIHis/getbeneficiarydetails_sch?kon=34&appl_reg_no=${regNo}&year=25`
+                `${BASE_URL}/api/UIHis/getbeneficiarydetails_sch?kon=34&appl_reg_no=${regNo}&year=25`
             );
 
             const data = await res.json();

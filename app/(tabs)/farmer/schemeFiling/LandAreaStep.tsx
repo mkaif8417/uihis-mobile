@@ -1,20 +1,20 @@
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import PickerBox from '@/components/PickerBox';
+import { BASE_URL } from '@/ipconfig';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
-    Alert,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import useSchemeForm from '../../../../components/context/SchemeFormContext';
 import SchemeStepper from './../../../../components/SchemeStepper';
-
 
 export default function LandAreaStep() {
   console.log("land area stp rndrd")
@@ -36,7 +36,7 @@ export default function LandAreaStep() {
   useEffect(() => {
     let active = true;
 
-    fetch(`https://localhost:7065/api/UIHis/getSourceIrrigations?kon=34`)
+    fetch(`${BASE_URL}/api/UIHis/getSourceIrrigations?kon=34`)
       .then(res => res.json())
       .then(data => {
         if (!active) return;
@@ -48,7 +48,7 @@ export default function LandAreaStep() {
         setSources([]);
       });
 
-    fetch(`https://localhost:7065/api/UIHis/getSoilTypes?kon=34`)
+    fetch(`${BASE_URL}/api/UIHis/getSoilTypes?kon=34`)
       .then(res => res.json())
       .then(data => {
         if (!active) return;
@@ -60,7 +60,7 @@ export default function LandAreaStep() {
         setSoilTypes([]);
       });
 
-    fetch(`https://localhost:7065/api/UIHis/getLandTypes?kon=34`)
+    fetch(`${BASE_URL}/api/UIHis/getLandTypes?kon=34`)
       .then(res => res.json())
       .then(data => {
         if (!active) return;

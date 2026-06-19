@@ -1,6 +1,7 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import useFarmer from "@/components/context/FarmerContext";
+import { BASE_URL } from "@/ipconfig";
 import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -14,7 +15,6 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
 
 export default function FarmerHome() {
   const heightAnim = useRef(new Animated.Value(0)).current;
@@ -37,7 +37,7 @@ export default function FarmerHome() {
     const fetchData = async () => {
       try {
         const res = await fetch(
-          `https://localhost:7065/api/UIHis/getbeneficiarydetailsmob?kon=34&mobileno=${farmer.mobile_no}&year=25`
+          `${BASE_URL}/api/UIHis/getbeneficiarydetailsmob?kon=34&mobileno=${farmer.mobile_no}&year=25`
         );
 
         if (!res.ok) {

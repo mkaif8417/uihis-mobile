@@ -1,6 +1,7 @@
 import Captcha from "@/components/Captcha";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
+import { BASE_URL } from "@/ipconfig";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
@@ -19,7 +20,6 @@ const generateCaptcha = (length = 5) => {
         chars.charAt(Math.floor(Math.random() * chars.length))
     ).join("");
 };
-
 export default function ApplicationAcknowledgement() {
     const [loading, setLoading] = useState(false);
     const [ackData, setAckData] = useState<any[]>([]);
@@ -87,10 +87,10 @@ export default function ApplicationAcknowledgement() {
             try {
                 const [typeData, catData] = await Promise.all([
                     safeJsonFetch(
-                        "https://localhost:7065/api/UIHis/getApplicantTypes?kon=34"
+                        "${BASE_URL}/api/UIHis/getApplicantTypes?kon=34"
                     ),
                     safeJsonFetch(
-                        "https://localhost:7065/api/UIHis/GetCategories?kon=34"
+                        "${BASE_URL}/api/UIHis/GetCategories?kon=34"
                     ),
                 ]);
 
@@ -132,7 +132,7 @@ export default function ApplicationAcknowledgement() {
             setApiError("");
 
             const res = await fetch(
-                `https://localhost:7065/api/UIHis/getbeneficiarydetails_schst?kon=34&appl_reg_no=U250801010025&year=25`
+                `${BASE_URL}/api/UIHis/getbeneficiarydetails_schst?kon=34&appl_reg_no=U250801010025&year=25`
             );
 
             const data = await res.json();

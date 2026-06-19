@@ -1,6 +1,7 @@
 // import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import useFarmer from "@/components/context/FarmerContext";
+import { BASE_URL } from "@/ipconfig";
 import * as DocumentPicker from "expo-document-picker";
 import * as ImagePicker from "expo-image-picker";
 import * as WebBrowser from "expo-web-browser";
@@ -18,7 +19,6 @@ import {
     View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type ComponentItem = {
@@ -146,7 +146,7 @@ export default function UploadDocs() {
             setErrorReg("");
             try {
                 const res = await fetch(
-                    `https://localhost:7065/api/UIHis/getbeneficiarydetailsmob?kon=${KON}&mobileno=${farmer.mobile_no}&year=26`,
+                    `${BASE_URL}/api/UIHis/getbeneficiarydetailsmob?kon=${KON}&mobileno=${farmer.mobile_no}&year=26`,
                
 
                     { headers: { "Authorization": "Bearer YOUR_TOKEN_HERE" } }
@@ -173,7 +173,7 @@ export default function UploadDocs() {
         const fetchComponents = async () => {
             try {
                 const res = await fetch(
-                    `https://localhost:7065/api/UIHis/Hos_Scheme_Scandocs_others_Upload_PL?BenRegNo=${regNo}&kon=${KON}`,
+                    `${BASE_URL}/api/UIHis/Hos_Scheme_Scandocs_others_Upload_PL?BenRegNo=${regNo}&kon=${KON}`,
                     // 'https://hortnet.hortharyana.gov.in/UIHortHar-API/api/UIHis/Hos_Scheme_Scandocs_others_Upload_PL?BenRegNo=U250810040128&kon=08'
                     { headers: { "Authorization": "Bearer YOUR_TOKEN_HERE" } }
                 );
@@ -197,7 +197,7 @@ export default function UploadDocs() {
         setSelectedFile(null);
         try {
             const res = await fetch(
-                `https://localhost:7065/api/UIHis/Hos_Scheme_Scandocs_others_Upload_PLch?BenRegNo=${comp.appl_reg_no}&kon=${KON}&comp=${comp.comp}`,
+                `${BASE_URL}/api/UIHis/Hos_Scheme_Scandocs_others_Upload_PLch?BenRegNo=${comp.appl_reg_no}&kon=${KON}&comp=${comp.comp}`,
                  //    " https://hortnet.hortharyana.gov.in/UIHortHar-API/api/UIHis/Hos_Scheme_Scandocs_others_Upload_PLch?BenRegNo=U250810040128&kon=08&comp=56020126N"
                 { headers: { "Authorization": "Bearer YOUR_TOKEN_HERE" } }
             );
@@ -315,16 +315,106 @@ export default function UploadDocs() {
     };
 
     // ── Upload current doc, then advance ──────────────────────────────────────
+// const handleUpload = async () => {
+//     if (!selectedFile || !currentDoc || !selectedComp) return;
+//  console.log("selectedFile:", {
+//         uri: selectedFile.uri,
+//         name: selectedFile.name,
+//         mimeType: selectedFile.mimeType,
+//         size: selectedFile.size,
+//         rawFile: selectedFile.rawFile,  // is this undefined?
+//     });
+//     // ✅ Platform check — no manual removal needed later
+//     if (Platform.OS === "web" && !selectedFile.rawFile) {
+//         Alert.alert("Error", "No raw file available — please re-select the file.");
+//         return;
+//     }
+
+//     let ipAddress = "0.0.0.0";
+//     try {
+//         const ipRes = await fetch("https://api.ipify.org?format=json");
+//         const ipData = await ipRes.json();
+//         ipAddress = ipData.ip ?? "0.0.0.0";
+//     } catch { }
+
+//     setUploading(true);
+
+//     try {
+//         const formData = new FormData();
+
+// if (Platform.OS === "web") {
+//     // rawFile is confirmed available on web
+//     formData.append("files", selectedFile.rawFile!, selectedFile.name);
+// } else {
+//     formData.append("files", {
+//         uri: selectedFile.uri,
+//         name: selectedFile.name,
+//         type: selectedFile.mimeType ?? "application/octet-stream",
+//     } as any);
+// }
+
+//         formData.append("fileIds", currentDoc.fileId);
+//         formData.append("regno", selectedComp.appl_reg_no);
+//         formData.append("statecd", KON);
+//         formData.append("dcomp", selectedComp.comp);
+//         formData.append("kon", KON);
+//         formData.append("latitude", currentDoc.gpslat ?? "0");
+//         formData.append("longitude", currentDoc.gpslong ?? "0");
+//         formData.append("ipaddress", ipAddress);
+// //  console.log("=== FormData being sent ===");
+// //         for (let [key, value] of formData.entries()) {
+// //             console.log(key, "→", value);
+// //         }
+// //------------------------------------------------------------------------------
+//         console.log("===========================");
+//         console.log("Uploading to =>", `${BASE_URL}/api/UIHis/Hos_Scheme_Scandocs_others_Upload_uploadAllDocumentsll`);
+//         const res = await fetch(
+//             `${BASE_URL}/api/UIHis/Hos_Scheme_Scandocs_others_Upload_uploadAllDocumentsll`,
+//             {
+//                 method: "POST",
+//                 body: formData,
+//                 headers: { "Authorization": "Bearer YOUR_TOKEN_HERE" },
+//             }
+//         );
+//         console.log("UPLOAD STATUS:", res.status);
+//         const rawText = await res.text();
+// console.log("UPLOAD RAW RESPONSE:", rawText);
+
+
+
+//        const result = await res.json().catch(() => ({}));
+// const message = result?.message || result?.Message || "";
+
+// // ✅ Check message FIRST, before checking res.ok
+// const success =
+//     typeof message === "string" &&
+//     (message.toLowerCase().includes("upload sucess") ||
+//         message.toLowerCase().includes("upload success"));
+
+// if (!success) throw new Error(message || `Server error: ${res.status}`);
+
+//         setSelectedFile(null);
+//         setCurrentDocIndex(0);
+//         animateBadge();
+//         await fetchDocs(selectedComp);
+
+//     } catch (err: any) {
+//         Alert.alert("Upload Failed", err.message || "Please try again.");
+//     } finally {
+//         setUploading(false);
+//     }
+// };
 const handleUpload = async () => {
     if (!selectedFile || !currentDoc || !selectedComp) return;
- console.log("selectedFile:", {
+
+    console.log("selectedFile:", {
         uri: selectedFile.uri,
         name: selectedFile.name,
         mimeType: selectedFile.mimeType,
         size: selectedFile.size,
-        rawFile: selectedFile.rawFile,  // is this undefined?
+        rawFile: selectedFile.rawFile,
     });
-    // ✅ Platform check — no manual removal needed later
+
     if (Platform.OS === "web" && !selectedFile.rawFile) {
         Alert.alert("Error", "No raw file available — please re-select the file.");
         return;
@@ -342,16 +432,15 @@ const handleUpload = async () => {
     try {
         const formData = new FormData();
 
-if (Platform.OS === "web") {
-    // rawFile is confirmed available on web
-    formData.append("files", selectedFile.rawFile!, selectedFile.name);
-} else {
-    formData.append("files", {
-        uri: selectedFile.uri,
-        name: selectedFile.name,
-        type: selectedFile.mimeType ?? "application/octet-stream",
-    } as any);
-}
+        if (Platform.OS === "web") {
+            formData.append("files", selectedFile.rawFile!, selectedFile.name);
+        } else {
+            formData.append("files", {
+                uri: selectedFile.uri,
+                name: selectedFile.name,
+                type: selectedFile.mimeType ?? "application/octet-stream",
+            } as any);
+        }
 
         formData.append("fileIds", currentDoc.fileId);
         formData.append("regno", selectedComp.appl_reg_no);
@@ -361,13 +450,11 @@ if (Platform.OS === "web") {
         formData.append("latitude", currentDoc.gpslat ?? "0");
         formData.append("longitude", currentDoc.gpslong ?? "0");
         formData.append("ipaddress", ipAddress);
-//  console.log("=== FormData being sent ===");
-//         for (let [key, value] of formData.entries()) {
-//             console.log(key, "→", value);
-//         }
-        console.log("===========================");
+
+        console.log("Uploading to =>", `${BASE_URL}/api/UIHis/Hos_Scheme_Scandocs_others_Upload_uploadAllDocumentsll`);
+
         const res = await fetch(
-            "https://localhost:7065/api/UIHis/Hos_Scheme_Scandocs_others_Upload_uploadAllDocumentsll",
+            `${BASE_URL}/api/UIHis/Hos_Scheme_Scandocs_others_Upload_uploadAllDocumentsll`,
             {
                 method: "POST",
                 body: formData,
@@ -375,16 +462,26 @@ if (Platform.OS === "web") {
             }
         );
 
-       const result = await res.json().catch(() => ({}));
-const message = result?.message || result?.Message || "";
+        console.log("UPLOAD STATUS:", res.status);
+        const rawText = await res.text();
+        console.log("UPLOAD RAW RESPONSE:", rawText);
 
-// ✅ Check message FIRST, before checking res.ok
+        let result: any = {};
+        try {
+            result = JSON.parse(rawText);
+        } catch {
+            console.log("Response was not JSON");
+        }
+
+        const message = result?.message || result?.Message || "";
+        console.log("Parsed message:", message);
 const success =
     typeof message === "string" &&
-    (message.toLowerCase().includes("upload sucess") ||
-        message.toLowerCase().includes("upload success"));
+    message.toLowerCase().includes("success");
 
-if (!success) throw new Error(message || `Server error: ${res.status}`);
+        console.log("Success evaluated as:", success);
+
+        if (!success) throw new Error(message || `Server error: ${res.status}`);
 
         setSelectedFile(null);
         setCurrentDocIndex(0);
@@ -397,6 +494,7 @@ if (!success) throw new Error(message || `Server error: ${res.status}`);
         setUploading(false);
     }
 };
+//------------------------------------------------------------------
     // ── Navigation ────────────────────────────────────────────────────────────
     const handleSkip = () => {
         if (safeDocIndex < pendingDocs.length - 1) {

@@ -2,7 +2,7 @@ import axios from 'axios';
 import { createContext, useContext, useState } from 'react';
 
 const API = axios.create({
-  baseURL: "https://localhost:7065/api/UIHis",
+  baseURL: "${BASE_URL}/api/UIHis",
 });
 
 const SchemeFormContext = createContext<any>(null);

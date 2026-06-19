@@ -10,7 +10,7 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
-
+import { BASE_URL } from "@/ipconfig";
 export default function LandLocationStep() {
   const { form, updateForm } = useSchemeForm();
   const [draft, setDraft] = useState(() => ({
@@ -57,7 +57,7 @@ export default function LandLocationStep() {
     setDistricts([]);
 
     fetch(
-      "https://localhost:7065/api/UIHis/getDistricts?kon=34&state_code=08"
+      "${BASE_URL}/api/UIHis/getDistricts?kon=34&state_code=08"
     )
       .then(res => res.json())
       .then(data => {
@@ -102,7 +102,7 @@ export default function LandLocationStep() {
 
 
     fetch(
-      `https://localhost:7065/api/UIHis/getMandals?kon=34&state_code=08&district_code=${draft.address.district}`
+      `${BASE_URL}/api/UIHis/getMandals?kon=34&state_code=08&district_code=${draft.address.district}`
     )
       .then(res => res.json())
       .then(data => {
@@ -144,7 +144,7 @@ export default function LandLocationStep() {
 
 
     fetch(
-      `https://localhost:7065/api/UIHis/getPanchayats?kon=34&state_code=08&district_code=${draft.address.district}&mandal_code=${draft.address.mandal}`
+      `${BASE_URL}/api/UIHis/getPanchayats?kon=34&state_code=08&district_code=${draft.address.district}&mandal_code=${draft.address.mandal}`
     )
       .then(res => res.json())
       .then(data => {
@@ -183,7 +183,7 @@ export default function LandLocationStep() {
 
 
     fetch(
-      `https://localhost:7065/api/UIHis/getVillages?kon=34&state_code=08&district_code=${draft.address.district}&mandal_code=${draft.address.mandal}&panchayat_code=${draft.address.panchayat}`
+      `${BASE_URL}/api/UIHis/getVillages?kon=34&state_code=08&district_code=${draft.address.district}&mandal_code=${draft.address.mandal}&panchayat_code=${draft.address.panchayat}`
     )
       .then(res => res.json())
       .then(data => {

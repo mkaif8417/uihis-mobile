@@ -12,7 +12,7 @@ import {
   View,
 } from "react-native";
 import useFarmer from "../../../components/context/FarmerContext";
-
+import { BASE_URL } from "../../../ipconfig";
 const generateCaptcha = (): string => {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let result = "";
@@ -39,78 +39,89 @@ const FarmerLogin: React.FC = () => {
     setCaptcha(generateCaptcha());
   }, []);
 
-  const sendOtp = async (): Promise<void> => {
-    if (mobile.length !== 10) {
-      setError("Enter valid mobile number");
+ const sendOtp = async (): Promise<void> => {
+  if (mobile.length !== 10) {
+    setError("Enter valid mobile number");
+    return;
+  }
+
+  try {
+    const url = `${BASE_URL}/api/UIHis/getotp?userid=${mobile}`;
+    console.log("Calling getotp =>", url);
+
+    const res = await fetch(url, { method: "GET" });
+
+    console.log("STATUS:", res.status);
+
+    const text = await res.text();
+    console.log("RAW RESPONSE:", text);
+
+    if (!res.ok) {
+      setError("Server error");
       return;
     }
 
-    try {
-      const res = await fetch(
-        `https://localhost:7065/api/UIHis/getotp?userid=${mobile}`,
-        // `https://hortnet.hortharyana.gov.in/UIHortHar-API/api/UIHis/getotp?userid=${mobile}`,
-        { method: "GET" }
-      );
-
-      const text = await res.text();
-
-      if (!res.ok) {
-        setError("Server error");
-        return;
-      }
-
-      if (text && text.length === 6) {
-        setSentOtp(text);
-        setOtpSent(true);
-        setOtp(text);
-        setError("");
-        alert("OTP sent successfully");
-      } else {
-        setError(text || "Failed to send OTP");
-      }
-    } catch (err) {
-      setError("Network error");
+    if (text && text.length === 6) {
+      setSentOtp(text);
+      setOtpSent(true);
+      setOtp(text);
+      setError("");
+      alert("OTP sent successfully");
+    } else {
+      setError(text || "Failed to send OTP");
     }
-  };
+  } catch (err) {
+    console.log("Network error =>", err);
+    setError("Network error");
+  }
+};
+const verifyOtp = async (): Promise<void> => {
+  if (otp.length !== 6) {
+    setError("Enter valid OTP");
+    return;
+  }
 
-  const verifyOtp = async (): Promise<void> => {
-    if (otp.length !== 6) {
-      setError("Enter valid OTP");
+  if (otp !== sentotp) {
+    setError("Invalid OTP");
+    return;
+  }
+
+  try {
+    const url = `${BASE_URL}/api/UIHis/getbeneficiarydetailsmob?kon=34&mobileno=${mobile}&year=25`;
+    console.log("Calling getbeneficiarydetailsmob =>", url);
+
+    const res = await fetch(url, { method: "GET" });
+
+    console.log("STATUS:", res.status);
+
+    if (!res.ok) {
+      const errText = await res.text();
+      console.log("RAW ERROR RESPONSE:", errText);
+      setError("Server error");
       return;
     }
 
-    if (otp !== sentotp) {
-      setError("Invalid OTP");
+    const result: any[] = await res.json();
+    console.log("RESULT:", result);
+
+    if (!Array.isArray(result) || result.length === 0) {
+      setError("No beneficiary data found");
       return;
     }
 
-    try {
-      const res = await fetch(
-        `https://localhost:7065/api/UIHis/getbeneficiarydetailsmob?kon=34&mobileno=${mobile}&year=25`,
-        // `https://hortnet.hortharyana.gov.in/UIHortHar-API/api/UIHis/getbeneficiarydetailsmob?kon=08&mobileno=${mobile}&year=25`,
-        { method: "GET" }
-      );
+    updateFarmer({
+      applicant_name: result[0].applicant_name,
+      swdh_name: result[0].swdh_name,
+      appl_reg_no: result[0].appl_reg_no,
+      mobile_no: mobile,
+    });
 
-      const result: any[] = await res.json();
-
-      if (!Array.isArray(result) || result.length === 0) {
-        setError("No beneficiary data found");
-        return;
-      }
-
-      updateFarmer({
-        applicant_name: result[0].applicant_name,
-        swdh_name: result[0].swdh_name,
-        appl_reg_no: result[0].appl_reg_no,
-        mobile_no: mobile,
-      });
-
-      router.replace("/farmer/farmerHome");
-    } catch (err) {
-      setError("Network error during verification");
-    }
-  };
-
+    router.replace("/farmer/farmerHome");
+  } catch (err) {
+    console.log("Network error during verification =>", err);
+    setError("Network error during verification");
+  }
+};
   return (
     <ScreenLayout>
       <ScrollView contentContainerStyle={styles.container}>

@@ -70,10 +70,10 @@ export default function Acknowledgement({
       try {
         const [typeData, catData] = await Promise.all([
           safeJsonFetch(
-            "https://localhost:7065/api/UIHis/getApplicantTypes?kon=34"
+            "${BASE_URL}/api/UIHis/getApplicantTypes?kon=34"
           ),
           safeJsonFetch(
-            "https://localhost:7065/api/UIHis/GetCategories?kon=34"
+            "${BASE_URL}/api/UIHis/GetCategories?kon=34"
           ),
         ]);
 
@@ -110,7 +110,7 @@ export default function Acknowledgement({
       setApiError("");
 
       const res = await fetch(
-        `https://localhost:7065/api/UIHis/getbeneficiarydetails_sch?kon=34&appl_reg_no=${farmer.appl_reg_no}&year=25`
+        `${BASE_URL}/api/UIHis/getbeneficiarydetails_sch?kon=34&appl_reg_no=${farmer.appl_reg_no}&year=25`
       );
 
       const data = await res.json();

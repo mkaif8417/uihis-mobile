@@ -7,13 +7,13 @@ import LandDetails from "@/components/LandDetails";
 import PersonalInfo from "@/components/PersonalInfo";
 import PhotoUpload from "@/components/PhotoUpload";
 import Review from "@/components/Review";
+import { BASE_URL } from "@/ipconfig";
 import { router } from "expo-router";
 import { useMemo, useRef, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import useFarmer from "../../../../components/context/FarmerContext";
 import { buildRegistrationPayload } from "../../../../components/serviceFolder/registration.service";
-
 const steps = [
   "Personal Info",
   "Address",
@@ -73,7 +73,7 @@ export default function NonProjectBased() {
     console.log("POST PAYLOAD:", payload);
 
     await fetch(
-      `https://localhost:7065/api/UIHis/AddBeneficiary?kon=34`,
+      `${BASE_URL}/api/UIHis/AddBeneficiary?kon=34`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
