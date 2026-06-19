@@ -42,6 +42,7 @@ export interface LoginPayload {
   systemId:   string;
 }
 
+
 /** Decrypted login response shape (adjust to whatever your API actually returns). */
 export interface LoginResponse {
   success?:      boolean;
@@ -64,10 +65,22 @@ export interface LoginResponse {
  * Hash password to hex SHA-256.
  * Mirror whatever your Angular project does before sending the password.
  */
-function hashPassword(plaintext: string, rawSalt: string): string {
-  const hashPass = CryptoJS.SHA256(plaintext).toString(CryptoJS.enc.Hex);
-  const hashSalt = CryptoJS.SHA256(rawSalt).toString(CryptoJS.enc.Hex);
-  return CryptoJS.SHA256(hashPass + hashSalt).toString(CryptoJS.enc.Hex);
+function hashPassword(password: string, rawSalt: string): string {
+  // Angular: sha256(password)
+  const passwordHash = CryptoJS.SHA256(password)
+    .toString(CryptoJS.enc.Hex);
+
+  // Angular: sha256(hiddensalt)
+  const saltHash = CryptoJS.SHA256(rawSalt)
+    .toString(CryptoJS.enc.Hex);
+
+  // Angular:
+  // var shacd = sha256(password) + sha256(hiddensalt);
+  // var shacd1 = sha256(shacd);
+  const finalHash = CryptoJS.SHA256(passwordHash + saltHash)
+    .toString(CryptoJS.enc.Hex);
+
+  return finalHash;
 }
 /**
  * Generic encrypted POST helper.
@@ -126,7 +139,7 @@ async function encryptedPost<TBody, TResponse>(
       'Content-Type': 'application/json',
       Accept: 'application/json',
     },
-    body: JSON.stringify({ encryptedData }),
+    body: JSON.stringify(body),
   });
 
   // ===== DEBUG =====
@@ -185,17 +198,36 @@ export async function loginDepartmentOfficial(args: LoginArgs): Promise<LoginRes
 //   attempt:    args.attempt ?? 1,
 //   systemId:   args.systemId ?? 'MOBILE_APP',
 // };
-const rawSalt = String(Date.now()).slice(-10);
 
+// const rawSalt = String(Date.now()).slice(-10);
+const rawSalt = Math.floor(100000 + Math.random() * 900000).toString();
 const payload: LoginPayload = {
   username: args.username.trim(),
   password: hashPassword(args.password.trim(), rawSalt),
-  hiddensalt: rawSalt,
+hiddensalt: rawSalt,
   kon: '34',
   ipadd: '0.0.0.0',
-  attempt: args.attempt ?? 1,
+  attempt: 1,
   systemId: 'MOBILE_APP',
 };
+console.log('rawSalt:', rawSalt);
+
+console.log(
+  'passwordHash:',
+  CryptoJS.SHA256(args.password.trim()).toString(CryptoJS.enc.Hex)
+);
+
+console.log(
+  'saltHash:',
+  CryptoJS.SHA256(rawSalt).toString(CryptoJS.enc.Hex)
+);
+
+console.log(
+  'finalPassword:',
+  hashPassword(args.password.trim(), rawSalt)
+);
+
+console.log('payload:', JSON.stringify(payload, null, 2));
   // ADD HERE
   console.log("rawSalt =", rawSalt);
   console.log("hiddensalt =", payload.hiddensalt);
@@ -219,5 +251,5 @@ const payload: LoginPayload = {
   }
   // ── DEBUG END ────────────────────────────────────────────────────
 
-  return encryptedPost<LoginPayload, LoginResponse>('/api/UIHis/Login', payload);
+  return encryptedPost<LoginPayload, LoginResponse>('/api/UIHis/checkcredentials', payload);
 }
