@@ -33,6 +33,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { loginDepartmentOfficial } from '../../../api/_api';
 import Captcha from '../../../components/Captcha';
+import { saveSession } from '../../../utils/authStorage';
 
 // ─── Navigation / Redux (restore when wiring up) ──────────────────────────────
 // import { StackNavigationProp } from '@react-navigation/stack';
@@ -144,71 +145,70 @@ export default function DepartmentOfficialLoginScreen({ navigation }: Props) {
     }
   };
 
-  // ── Login ─────────────────────────────────────────────────────────────────
-const handleLogin = async () => {
-  // ── Validation ──────────────────────────────────────────────────────────
-  if (!username.trim()) {
-    Alert.alert('Missing Field', 'Please enter your Email Address / Username.');
-    return;
-  }
-  if (!password.trim()) {
-    Alert.alert('Missing Field', 'Please enter your Password.');
-    return;
-  }
-  if (captchaAnswer.toUpperCase().trim() !== captchaCode) {
-    Alert.alert('Wrong CAPTCHA', 'Please enter the CAPTCHA correctly.');
-    handleRefreshCaptcha();
-    return;
-  }
-
-  setIsLoading(true);
-
-  try {
-    const data = await loginDepartmentOfficial({
-      username,
-      password,
-      attempt: loginAttempt,
-    });
-
-    const isSuccess =
-      data?.success === true  ||
-      data?.Success === true  ||
-      data?.status  === 'success' ||
-      data?.Status  === 'success';
-
-    if (isSuccess) {
-      // dispatch(setOfficialSession({ token: data.token, user: data }));
-      router.replace({
-        pathname: '/department/DeptHome',
-        params: { username: data?.userName ?? data?.UserName ?? username },
-      });
-    } else {
-      const msg =
-        data?.message      ??
-        data?.Message      ??
-        data?.errorMessage ??
-        data?.ErrorMessage ??
-        'Invalid credentials. Please try again.';
-      Alert.alert('Login Failed', String(msg));
-      setLoginAttempt(n => n + 1);
+// ── Login ─────────────────────────────────────────────────────────────────
+ // ── Login ─────────────────────────────────────────────────────────────────
+  const handleLogin = async () => {
+    if (!username.trim()) {
+      Alert.alert('Missing Field', 'Please enter your Email Address / Username.');
+      return;
+    }
+    if (!password.trim()) {
+      Alert.alert('Missing Field', 'Please enter your Password.');
+      return;
+    }
+    if (captchaAnswer.toUpperCase().trim() !== captchaCode) {
+      Alert.alert('Wrong CAPTCHA', 'Please enter the CAPTCHA correctly.');
       handleRefreshCaptcha();
+      return;
     }
 
-  } catch (error: any) {
-    console.log('Login error =>', error);
-    setLoginAttempt(n => n + 1);
+    setIsLoading(true);
 
-    if (error?.message?.includes('Network request failed')) {
-      Alert.alert('Network Error', 'Unable to reach the server. Check your connection and try again.');
-    } else {
-      Alert.alert('Login Failed', error?.message ?? 'Something went wrong. Please try again.');
+    try {
+      const data = await loginDepartmentOfficial({
+        username,
+        password,
+        attempt: loginAttempt,
+      });
+
+      const rows = Array.isArray(data) ? data : data ? [data] : [];
+      const row  = rows[0];
+
+      const isSuccess = rows.length > 0 && Boolean(row?.JWT);
+
+      if (isSuccess) {
+        await saveSession({
+          jwt:          row!.JWT!,
+          refreshToken: row?.refreshToken,
+          username:     row?.user_name ?? username,
+          deptCode:     row?.dept_code,
+          roleCode:     row?.role_code,
+          accessPage:   row?.access_page,
+        });
+
+        // No jwt/tokens in params now — DeptHome reads them from secure storage.
+        router.replace({ pathname: '/department/DeptHome' });
+      } else {
+        Alert.alert('Login Failed', 'Invalid credentials. Please try again.');
+        setLoginAttempt(n => n + 1);
+        handleRefreshCaptcha();
+      }
+
+    } catch (error: any) {
+      console.log('Login error =>', error);
+      setLoginAttempt(n => n + 1);
+
+      if (error?.message?.includes('Network request failed')) {
+        Alert.alert('Network Error', 'Unable to reach the server. Check your connection and try again.');
+      } else {
+        Alert.alert('Login Failed', error?.message ?? 'Something went wrong. Please try again.');
+      }
+
+      handleRefreshCaptcha();
+    } finally {
+      setIsLoading(false);
     }
-
-    handleRefreshCaptcha();
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
   // ── UI ────────────────────────────────────────────────────────────────────
   return (
     <SafeAreaView style={styles.safeArea}>

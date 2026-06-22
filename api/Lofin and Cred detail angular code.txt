@@ -1,0 +1,58 @@
+private myRandomNumber(): string {
+    const length = 10;
+    const characters = '0123456789';
+    let result = '';
+
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      result += characters.charAt(randomIndex);
+    }
+
+    return result;
+  }
+
+
+
+  shacode() {
+    this.hiddensalt = this.myRandomNumber();
+    //this.hiddensalt = this._random.next();
+    var shacd = sha256(this.credentials.password) + sha256(this.hiddensalt);
+    // alert(sha256(this.credentials.password))
+    // alert(this.hiddensalt);
+    var shacd1 = sha256(shacd);
+    this.credentials.password = shacd1;
+    this.credentials.hiddensalt = sha256(this.hiddensalt);
+    this.credentials.kon = this.statecd;
+  }
+
+
+
+
+
+
+
+  
+Login(body: Credentials): Observable<any> {
+    const url = `${this.Rest_API_SERVER}UIHis/Login`;
+    const encryptedBody = this.encryptData(body);
+
+    return this.http.post<any>(url, { encryptedData: encryptedBody }).pipe(
+      map(response => {
+        return this.decryptData(response.encryptedData);
+      }),
+      catchError((error) => this.handleError(error))
+    );
+  }
+
+
+
+  encryptData(data: any): string {
+    const key = enc.Utf8.parse(environment.secretKey);
+    const iv = enc.Utf8.parse(environment.secretIv);
+
+    return AES.encrypt(JSON.stringify(data), key, {
+      iv: iv,
+      mode: mode.CBC,
+      padding: pad.PKCS7
+    }).toString();
+  }
