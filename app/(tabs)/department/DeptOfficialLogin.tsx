@@ -174,25 +174,26 @@ export default function DepartmentOfficialLoginScreen({ navigation }: Props) {
       const rows = Array.isArray(data) ? data : data ? [data] : [];
       const row  = rows[0];
 
-      const isSuccess = rows.length > 0 && Boolean(row?.JWT);
+      // const isSuccess = rows.length > 0 && Boolean(row?.JWT);
 
-      if (isSuccess) {
-        await saveSession({
-          jwt:          row!.JWT!,
-          refreshToken: row?.refreshToken,
-          username:     row?.user_name ?? username,
-          deptCode:     row?.dept_code,
-          roleCode:     row?.role_code,
-          accessPage:   row?.access_page,
-        });
+   const isSuccess = Boolean(data?.jwt);
 
-        // No jwt/tokens in params now — DeptHome reads them from secure storage.
-        router.replace({ pathname: '/department/DeptHome' });
-      } else {
-        Alert.alert('Login Failed', 'Invalid credentials. Please try again.');
-        setLoginAttempt(n => n + 1);
-        handleRefreshCaptcha();
-      }
+if (isSuccess) {
+  await saveSession({
+    jwt:          data.jwt,
+    refreshToken: data.refreshToken,
+    username:     data.data?.user_name ?? username,
+    deptCode:     data.data?.dept_code,
+    roleCode:     data.data?.role_code,
+    accessPage:   data.data?.access_page,
+  });
+
+  router.replace({ pathname: '/department/DeptHome' });
+} else {
+  Alert.alert('Login Failed', 'Invalid credentials. Please try again.');
+  setLoginAttempt(n => n + 1);
+  handleRefreshCaptcha();
+}
 
     } catch (error: any) {
       console.log('Login error =>', error);

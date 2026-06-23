@@ -19,23 +19,37 @@ export interface GetHNLoginData {
   role_code?:      string;
   adh_code?:       string;
   ho_code?:        string;
-  Role_Name?:      string;
+  role_Name?:      string;   // note: lowercase r in the real response
   state_code?:     string;
   district_code?:  string;
   mandal_code?:    string;
-  Panchayat_code?: string;
+  panchayat_code?: string | null;
   reg_code?:       string;
-  user_id?:        string;
   user_name?:      string;
   access_page?:    string;
   scheme?:         string;
-  JWT?:            string;
-  refreshToken?:   string;
+  user_id?:        string;
+  uid?:            string;
+  desig?:          string;
+  officercd?:      string;
+  state_name?:     string;
+  dist_name?:      string;
+  mandal_name?:    string;
+  backPage?:       string | null;
+  outer_nav?:      string | null;
   [key: string]: unknown;
 }
 
-export type LoginResponse = GetHNLoginData[];
+// ── Shape of the decrypted server response ──────────────────────────────
+export interface LoginApiResponse {
+  data: GetHNLoginData;
+  jwt:  string;
+  refreshToken?: string;
+}
 
+export type LoginResponse = LoginApiResponse;
+
+// ── Shape of the arguments the screen passes in ──────────────────────────
 export interface LoginArgs {
   username:  string;
   password:  string;
@@ -50,7 +64,6 @@ function hashPassword(password: string, rawSalt: string): string {
   return CryptoJS.SHA256(passwordHash + rawSalt).toString(CryptoJS.enc.Hex);
 }
 
-
 function generateSalt(): string {
   return Math.floor(1000000000 + Math.random() * 9000000000).toString();
 }
@@ -59,15 +72,15 @@ export async function loginDepartmentOfficial(args: LoginArgs): Promise<LoginRes
   const rawSalt    = generateSalt();
   const saltHashed = CryptoJS.SHA256(rawSalt).toString(CryptoJS.enc.Hex);
 
- const payload: LoginPayload = {
-  username:   args.username.trim(),
-  password:   hashPassword(args.password.trim(), rawSalt),
-  hiddensalt: rawSalt,       // ← RAW salt, not sha256(rawSalt)
-  kon:        '34',
-  ipadd:      '0.0.0.0',
-  attempt:    args.attempt ?? 0,
-  systemId:   args.systemId ?? 'MOBILE_APP',
-};
+  const payload: LoginPayload = {
+    username:   args.username.trim(),
+    password:   hashPassword(args.password.trim(), rawSalt),
+    hiddensalt: rawSalt,       // ← RAW salt, not sha256(rawSalt)
+    kon:        '34',
+    ipadd:      '0.0.0.0',
+    attempt:    args.attempt ?? 0,
+    systemId:   args.systemId ?? 'MOBILE_APP',
+  };
 
   if (__DEV__) {
     console.log('=== OUR PAYLOAD ===');
@@ -109,8 +122,11 @@ export async function loginDepartmentOfficial(args: LoginArgs): Promise<LoginRes
   try {
     const json = await response.json();
     if (__DEV__) console.log('raw response json:', json);
-    return decryptData<LoginResponse>(json.encryptedData);
+    const decrypted = decryptData<LoginResponse>(json.encryptedData);
+    if (__DEV__) console.log('DECRYPTED RESPONSE:', JSON.stringify(decrypted, null, 2));
+    return decrypted;
   } catch (decryptErr: any) {
+    if (__DEV__) console.log('decrypt error:', decryptErr);
     throw new Error('Failed to decrypt server response — possible key/IV mismatch.');
   }
 }
